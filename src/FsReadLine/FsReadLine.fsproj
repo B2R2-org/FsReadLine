@@ -16,6 +16,7 @@
     <Compile Include="ReadLineTypes.fs" />
     <Compile Include="ReadLine.fs" />
     <Compile Include="Library.fs" />
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath=""/>
   </ItemGroup>
 
 </Project>
