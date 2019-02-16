@@ -1,3 +1,5 @@
+![](https://img.shields.io/nuget/v/B2R2.FsReadLine.svg?style=plastic)
+
 # B2R2.FsReadLine
 
 This is a GNU readline implementation written purely in F#, which is inspired by
