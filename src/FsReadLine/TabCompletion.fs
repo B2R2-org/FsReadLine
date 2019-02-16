@@ -52,8 +52,10 @@ module internal TabCompletion =
     if String.length input >= String.length cmd then false
     else cmd.StartsWith (input)
 
-  let candidates info (input: string) =
-    let prefix = input.[0]
-    match Map.tryFind prefix info.PrefixMap with
-    | Some lst -> lst |> List.filter (cmdFilter input)
-    | None -> []
+  let candidates info input =
+    if String.length input = 0 then []
+    else
+      let prefix = input.[0]
+      match Map.tryFind prefix info.PrefixMap with
+      | Some lst -> lst |> List.filter (cmdFilter input)
+      | None -> []
