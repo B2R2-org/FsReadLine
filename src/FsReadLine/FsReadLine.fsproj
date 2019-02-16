@@ -7,7 +7,7 @@
     <PackageId>B2R2.FsReadLine</PackageId>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIconUrl>https://softsec.kaist.ac.kr/images/b2r2-240x240.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/B2R2-org/B2R2</RepositoryUrl>
+    <RepositoryUrl>https://github.com/B2R2-org/FsReadLine</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
