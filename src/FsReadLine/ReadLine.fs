@@ -139,13 +139,17 @@ let wordRight ctxt action =
     else ctxt
   loop ctxt
 
-let rec removeUntilCursor ctxt =
+let rec removeFromBeginToCursor ctxt =
   if isStartOfLine ctxt then ctxt
-  else removeUntilCursor (backspace ctxt)
+  else removeFromBeginToCursor (backspace ctxt)
 
 let clearLine ctxt =
   moveCursorEnd ctxt
-  |> removeUntilCursor
+  |> removeFromBeginToCursor
+
+let rec removeFromCursorToEnd ctxt =
+  if isEndOfLine ctxt then ctxt
+  else removeFromCursorToEnd (removeCharAtCursor ctxt)
 
 let writeStr ctxt str =
   str |> Seq.fold (fun ctxt ch -> writeChar ctxt ch) ctxt
@@ -204,9 +208,10 @@ let keyHandle ctxt (info: ConsoleKeyInfo) =
   | ConsoleKey.B when isCtrlPushed -> moveCursorLeft ctxt
   | ConsoleKey.F when isCtrlPushed -> moveCursorRight ctxt
   | ConsoleKey.D when isCtrlPushed -> delete ctxt
-  | ConsoleKey.U when isCtrlPushed -> removeUntilCursor ctxt
+  | ConsoleKey.U when isCtrlPushed -> removeFromBeginToCursor ctxt
   | ConsoleKey.P when isCtrlPushed -> prevHistory ctxt
   | ConsoleKey.N when isCtrlPushed -> nextHistory ctxt
+  | ConsoleKey.K when isCtrlPushed -> removeFromCursorToEnd ctxt
   | _ -> info.KeyChar |> writeChar ctxt
 
 let private updateHistory ctxt cmdline =
