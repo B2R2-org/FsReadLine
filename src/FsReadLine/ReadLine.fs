@@ -212,6 +212,7 @@ let keyHandle ctxt (info: ConsoleKeyInfo) =
   | ConsoleKey.P when isCtrlPushed -> prevHistory ctxt
   | ConsoleKey.N when isCtrlPushed -> nextHistory ctxt
   | ConsoleKey.K when isCtrlPushed -> removeFromCursorToEnd ctxt
+  | ConsoleKey.Escape -> ctxt
   | _ -> info.KeyChar |> writeChar ctxt
 
 let private updateHistory ctxt cmdline =
