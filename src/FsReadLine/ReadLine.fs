@@ -175,6 +175,10 @@ let nextHistory ctxt =
     { ctxt with History = h } |> clearLine
   | [] -> ctxt
 
+let clearScreen ctxt =
+  Console.SetWindowPosition (0, Console.CursorTop)
+  ctxt
+
 let tabComplete ctxt =
   let input = ctxt.Builder.ToString ()
   match input |> TabCompletion.candidates ctxt.TabInfo with
@@ -212,6 +216,7 @@ let keyHandle ctxt (info: ConsoleKeyInfo) =
   | ConsoleKey.P when isCtrlPushed -> prevHistory ctxt
   | ConsoleKey.N when isCtrlPushed -> nextHistory ctxt
   | ConsoleKey.K when isCtrlPushed -> removeFromCursorToEnd ctxt
+  | ConsoleKey.L when isCtrlPushed -> clearScreen ctxt
   | ConsoleKey.Escape -> ctxt
   | _ -> info.KeyChar |> writeChar ctxt
 
