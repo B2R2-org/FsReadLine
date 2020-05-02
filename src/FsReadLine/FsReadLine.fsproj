@@ -6,7 +6,7 @@
     <IsTestProject>false</IsTestProject>
     <PackageId>B2R2.FsReadLine</PackageId>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-    <PackageIconUrl>https://softsec.kaist.ac.kr/images/b2r2-240x240.png</PackageIconUrl>
+    <PackageIcon>b2r2-240x240.png</PackageIcon>
     <RepositoryUrl>https://github.com/B2R2-org/FsReadLine</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
@@ -17,6 +17,7 @@
     <Compile Include="ReadLine.fs" />
     <Compile Include="Library.fs" />
     <None Include="..\..\LICENSE.md" Pack="true" PackagePath=""/>
+    <None Include="b2r2-240x240.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 
 </Project>
