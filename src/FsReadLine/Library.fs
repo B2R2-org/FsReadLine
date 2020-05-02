@@ -29,6 +29,10 @@ namespace B2R2.FsReadLine
 type Console (prompt, cmds) =
   let mutable ctxt = ReadLineContext.Init prompt cmds
 
+  /// Update prompt string on the fly.
+  member __.UpdatePrompt str =
+    ctxt <- { ctxt with Prompt = str }
+
   member __.ReadLine () =
     let ctxt', line = ReadLine.read ctxt
     ctxt <- ctxt'
