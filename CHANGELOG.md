@@ -1,5 +1,10 @@
 # FsReadLine Change Log
 
+## 0.1.5 (2020-05-03)
+
+### Changed
+- Fix clear screen function and make it platform-independent.
+
 ## 0.1.4 (2020-05-03)
 
 ### Added
