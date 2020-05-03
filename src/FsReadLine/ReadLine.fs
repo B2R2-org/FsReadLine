@@ -175,8 +175,22 @@ let nextHistory ctxt =
     { ctxt with History = h } |> clearLine
   | [] -> ctxt
 
+let appendNewLines cnt =
+  Seq.replicate cnt Environment.NewLine
+  |> String.concat ""
+  |> Console.Write
+
 let clearScreen ctxt =
-  Console.SetWindowPosition (0, Console.CursorTop)
+  let winHeight = Console.WindowHeight
+  let bufHeight = Console.BufferHeight
+  let curTop = Console.CursorTop
+  if bufHeight <= curTop + winHeight then
+    let curLeft = Console.CursorLeft (* Store curLeft before adding newlines *)
+    appendNewLines winHeight
+    Console.SetWindowPosition (0, Console.CursorTop - winHeight)
+    Console.SetCursorPosition (curLeft, bufHeight - winHeight - 1)
+  else
+    Console.SetWindowPosition (0, curTop)
   ctxt
 
 let tabComplete ctxt =
