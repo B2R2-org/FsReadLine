@@ -1,7 +1,17 @@
 # FsReadLine Change Log
 
+## 0.2.0 (2023-08-04)
+
+### Added
+- SetCancelKeyHandler method to enable ctrl+c handling.
+
+### Changed
+- Adapt clear screen function for the latest .NET
+- Make `ReadLineContext` mutable.
+
 ## 0.1.6 (2023-08-03)
 
+### Changed
 - .NET version up
 
 ## 0.1.5 (2020-05-03)
