@@ -181,28 +181,12 @@ let appendNewLines cnt =
   |> String.concat ""
   |> Console.Write
 
-let runningOnWindows =
-  RuntimeInformation.IsOSPlatform OSPlatform.Windows
-
 let clearScreen ctxt =
-  if runningOnWindows then
-    let winHeight = Console.WindowHeight
-    let bufHeight = Console.BufferHeight
-    let curTop = Console.CursorTop
-    if bufHeight <= curTop + winHeight then
-      let curLeft = Console.CursorLeft (* Store curLeft before adding newlines *)
-      appendNewLines winHeight
-      Console.SetWindowPosition (0, Console.CursorTop - winHeight)
-      Console.SetCursorPosition (curLeft, bufHeight - winHeight - 1)
-    else
-      Console.SetWindowPosition (0, curTop)
-    ctxt
-  else
-    let input = ctxt.Builder.ToString ()
-    let ctxt = clearLine ctxt
-    Console.Clear ()
-    Console.Write ctxt.Prompt
-    writeStr ctxt input
+  let input = ctxt.Builder.ToString ()
+  let ctxt = clearLine ctxt
+  Console.Clear ()
+  Console.Write ctxt.Prompt
+  writeStr ctxt input
 
 let tabComplete ctxt =
   let input = ctxt.Builder.ToString ()
