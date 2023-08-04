@@ -27,12 +27,11 @@
 module internal B2R2.FsReadLine.ReadLine
 
 open System
-open System.Runtime.InteropServices
 
-let inline incCursorPos ctxt = { ctxt with CursorPos = ctxt.CursorPos + 1 }
-let inline decCursorPos ctxt = { ctxt with CursorPos = ctxt.CursorPos - 1 }
-let inline incCursorLim ctxt = { ctxt with CursorLim = ctxt.CursorLim + 1 }
-let inline decCursorLim ctxt = { ctxt with CursorLim = ctxt.CursorLim - 1 }
+let inline incCursorPos ctxt = ctxt.CursorPos <- ctxt.CursorPos + 1
+let inline decCursorPos ctxt = ctxt.CursorPos <- ctxt.CursorPos - 1
+let inline incCursorLim ctxt = ctxt.CursorLim <- ctxt.CursorLim + 1
+let inline decCursorLim ctxt = ctxt.CursorLim <- ctxt.CursorLim - 1
 let inline isStartOfLine ctxt = ctxt.CursorPos = 0
 let inline isEndOfLine ctxt = ctxt.CursorPos = ctxt.CursorLim
 let inline isStartOfTerminal () = Console.CursorLeft = 0
@@ -41,45 +40,41 @@ let inline isEndOfTerminal () = Console.CursorLeft = Console.BufferWidth - 1
 let inline getSubstrLeftOfCursor ctxt =
   ctxt.Builder.ToString().Substring(ctxt.CursorPos)
 
-let moveCursorEndOfAboveLine ctxt =
+let moveCursorEndOfAboveLine () =
   Console.SetCursorPosition (Console.BufferWidth - 1, Console.CursorTop - 1)
-  ctxt
 
-let moveCursorJustLeft ctxt =
+let moveCursorJustLeft () =
   Console.SetCursorPosition (Console.CursorLeft - 1, Console.CursorTop)
-  ctxt
 
 let moveCursorLeft ctxt =
-  if isStartOfLine ctxt then ctxt
-  elif isStartOfTerminal () then moveCursorEndOfAboveLine ctxt |> decCursorPos
-  else moveCursorJustLeft ctxt |> decCursorPos
+  if isStartOfLine ctxt then ()
+  elif isStartOfTerminal () then moveCursorEndOfAboveLine (); decCursorPos ctxt
+  else moveCursorJustLeft (); decCursorPos ctxt
 
-let moveCursorStartOfNextLine ctxt =
+let moveCursorStartOfNextLine () =
   Console.SetCursorPosition (0, Console.CursorTop + 1)
-  ctxt
 
-let moveCursorJustRight ctxt =
+let moveCursorJustRight () =
   Console.SetCursorPosition (Console.CursorLeft + 1, Console.CursorTop)
-  ctxt
 
 let moveCursorRight ctxt =
-  if isEndOfLine ctxt then ctxt
-  elif isEndOfTerminal () then moveCursorStartOfNextLine ctxt |> incCursorPos
-  else moveCursorJustRight ctxt |> incCursorPos
+  if isEndOfLine ctxt then ()
+  elif isEndOfTerminal () then moveCursorStartOfNextLine (); incCursorPos ctxt
+  else moveCursorJustRight (); incCursorPos ctxt
 
 let rec moveCursorHome ctxt =
-  if isStartOfLine ctxt then ctxt
-  else moveCursorHome (moveCursorLeft ctxt)
+  if isStartOfLine ctxt then ()
+  else moveCursorLeft ctxt; moveCursorHome ctxt
 
 let rec moveCursorEnd ctxt =
-  if isEndOfLine ctxt then ctxt
-  else moveCursorEnd (moveCursorRight ctxt)
+  if isEndOfLine ctxt then ()
+  else moveCursorRight ctxt; moveCursorEnd ctxt
 
 let writeCharEndOfLine ctxt (ch: char) =
   Console.Write (ch.ToString ())
   ctxt.Builder.Append (ch) |> ignore
   incCursorPos ctxt
-  |> incCursorLim
+  incCursorLim ctxt
 
 let writeCharMiddle ctxt (ch: char) =
   let left = Console.CursorLeft
@@ -89,7 +84,7 @@ let writeCharMiddle ctxt (ch: char) =
   Console.Write (ch.ToString () + str)
   Console.SetCursorPosition (left, top)
   moveCursorRight ctxt
-  |> incCursorLim
+  incCursorLim ctxt
 
 let writeChar ctxt ch =
   if isEndOfLine ctxt then writeCharEndOfLine ctxt ch
@@ -105,11 +100,11 @@ let removeCharAtCursor ctxt =
   decCursorLim ctxt
 
 let backspace ctxt =
-  if isStartOfLine ctxt then ctxt
-  else moveCursorLeft ctxt |> removeCharAtCursor
+  if isStartOfLine ctxt then ()
+  else moveCursorLeft ctxt; removeCharAtCursor ctxt
 
 let delete ctxt =
-  if isEndOfLine ctxt then ctxt
+  if isEndOfLine ctxt then ()
   else removeCharAtCursor ctxt
 
 let getPrevWordPosition ctxt =
@@ -122,8 +117,9 @@ let wordLeft ctxt action =
   let targetPos = getPrevWordPosition ctxt
   let rec loop ctxt =
     if not (isStartOfLine ctxt) && ctxt.CursorPos > targetPos then
-      loop (action ctxt)
-    else ctxt
+      action ctxt
+      loop ctxt
+    else ()
   loop ctxt
 
 let getNextWordPosition ctxt =
@@ -136,45 +132,46 @@ let wordRight ctxt action =
   let targetPos = getNextWordPosition ctxt
   let rec loop ctxt =
     if not (isEndOfLine ctxt) && ctxt.CursorPos < targetPos then
-      loop (action ctxt)
-    else ctxt
+      action ctxt
+      loop ctxt
+    else ()
   loop ctxt
 
 let rec removeFromBeginToCursor ctxt =
-  if isStartOfLine ctxt then ctxt
-  else removeFromBeginToCursor (backspace ctxt)
+  if isStartOfLine ctxt then ()
+  else backspace ctxt; removeFromBeginToCursor ctxt
 
 let clearLine ctxt =
   moveCursorEnd ctxt
-  |> removeFromBeginToCursor
+  removeFromBeginToCursor ctxt
 
 let rec removeFromCursorToEnd ctxt =
-  if isEndOfLine ctxt then ctxt
-  else removeFromCursorToEnd (removeCharAtCursor ctxt)
+  if isEndOfLine ctxt then ()
+  else removeCharAtCursor ctxt; removeFromCursorToEnd ctxt
 
 let writeStr ctxt str =
-  str |> Seq.fold (fun ctxt ch -> writeChar ctxt ch) ctxt
+  str |> Seq.iter (writeChar ctxt)
 
 let prevHistory ctxt =
   let h = ctxt.History
   match h.BwdList with
   | cmd :: rest ->
-    let ctxt = writeStr (clearLine ctxt) cmd
-    let h = { h with FwdList = cmd :: h.FwdList; BwdList = rest }
-    { ctxt with History = h }
-  | [] -> ctxt
+    clearLine ctxt
+    writeStr ctxt cmd
+    ctxt.History <- { h with FwdList = cmd :: h.FwdList; BwdList = rest }
+  | [] -> ()
 
 let nextHistory ctxt =
   let h = ctxt.History
   match h.FwdList with
   | hd :: cmd :: rest ->
-    let ctxt = writeStr (clearLine ctxt) cmd
-    let h = { h with FwdList = cmd :: rest; BwdList = hd :: h.BwdList }
-    { ctxt with History = h }
+    clearLine ctxt
+    writeStr ctxt cmd
+    ctxt.History <- { h with FwdList = cmd :: rest; BwdList = hd :: h.BwdList }
   | [cmd] ->
-    let h = { h with FwdList = []; BwdList = cmd :: h.BwdList }
-    { ctxt with History = h } |> clearLine
-  | [] -> ctxt
+    ctxt.History <- { h with FwdList = []; BwdList = cmd :: h.BwdList }
+    clearLine ctxt
+  | [] -> ()
 
 let appendNewLines cnt =
   Seq.replicate cnt Environment.NewLine
@@ -183,7 +180,7 @@ let appendNewLines cnt =
 
 let clearScreen ctxt =
   let input = ctxt.Builder.ToString ()
-  let ctxt = clearLine ctxt
+  clearLine ctxt
   Console.Clear ()
   Console.Write ctxt.Prompt
   writeStr ctxt input
@@ -191,10 +188,10 @@ let clearScreen ctxt =
 let tabComplete ctxt =
   let input = ctxt.Builder.ToString ()
   match input |> TabCompletion.candidates ctxt.TabInfo with
-  | [] -> ctxt
-  | [candidate] -> writeStr (clearLine ctxt) candidate
+  | [] -> ()
+  | [candidate] -> clearLine ctxt; writeStr ctxt candidate
   | lst ->
-    let ctxt = clearLine ctxt
+    clearLine ctxt
     Console.WriteLine ()
     lst |> List.iter Console.WriteLine
     Console.Write (ctxt.Prompt)
@@ -226,25 +223,36 @@ let keyHandle ctxt (info: ConsoleKeyInfo) =
   | ConsoleKey.N when isCtrlPushed -> nextHistory ctxt
   | ConsoleKey.K when isCtrlPushed -> removeFromCursorToEnd ctxt
   | ConsoleKey.L when isCtrlPushed -> clearScreen ctxt
-  | ConsoleKey.Escape -> ctxt
+  | ConsoleKey.Escape -> ()
   | _ -> info.KeyChar |> writeChar ctxt
 
 let private updateHistory ctxt cmdline =
-  { ctxt with History = History.Add ctxt.History cmdline }
+  ctxt.History <- History.Add ctxt.History cmdline
 
 let rec private readLoop ctxt =
   let info = Console.ReadKey (true)
-  if info.Key <> ConsoleKey.Enter then readLoop (keyHandle ctxt info)
-  else Console.WriteLine (); ctxt
+  if info.Key <> ConsoleKey.Enter then
+    keyHandle ctxt info
+    readLoop ctxt
+  else Console.WriteLine ()
 
 let private readCmdLine ctxt =
-  let ctxt = readLoop ctxt
+  readLoop ctxt
   let str = ctxt.Builder.ToString ()
-  ctxt.Builder.Clear () |> ignore
+  ReadLineContext.Clear ctxt
   str
 
 let read ctxt =
   Console.Write (ctxt.Prompt)
   let cmdline = readCmdLine ctxt
-  if String.IsNullOrWhiteSpace cmdline then ctxt, ""
-  else updateHistory ctxt cmdline, cmdline
+  if String.IsNullOrWhiteSpace cmdline then ""
+  else updateHistory ctxt cmdline; cmdline
+
+let addCancelEventHandler ctxt handler =
+  let myhandler sender (args: ConsoleCancelEventArgs) =
+    let cancel = handler sender
+    Console.WriteLine ()
+    Console.Write ctxt.Prompt
+    ReadLineContext.Clear ctxt
+    args.Cancel <- cancel
+  Console.CancelKeyPress.AddHandler myhandler

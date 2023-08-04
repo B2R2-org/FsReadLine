@@ -28,6 +28,7 @@
 let main _ =
   let cmds = ["help"; "hello"; "world"; "git"; "git init"; "git add"]
   let console = B2R2.FsReadLine.Console ("> ", cmds)
+  console.SetCancelKeyHandler (fun _ -> true)
   let rec loop () =
     let line = console.ReadLine ()
     printfn " [%s]" line

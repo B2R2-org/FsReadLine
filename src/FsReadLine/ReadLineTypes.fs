@@ -40,10 +40,10 @@ with
     { history with BwdList = cmd :: history.BwdList }
 
 type ReadLineContext = {
-  Prompt: string
-  CursorPos: int
-  CursorLim: int
-  History: History
+  mutable Prompt: string
+  mutable CursorPos: int
+  mutable CursorLim: int
+  mutable History: History
   TabInfo: TabCompletionInfo
   Builder: StringBuilder
 }
@@ -55,3 +55,8 @@ with
       History = History.Init ()
       TabInfo = TabCompletion.init cmds
       Builder = StringBuilder () }
+
+  static member Clear ctxt =
+    ctxt.CursorPos <- 0
+    ctxt.CursorLim <- 0
+    ctxt.Builder.Clear () |> ignore

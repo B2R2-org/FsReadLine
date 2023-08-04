@@ -33,7 +33,11 @@ type Console (prompt, cmds) =
   member __.UpdatePrompt str =
     ctxt <- { ctxt with Prompt = str }
 
+  /// Set cancel key (ctrl+c) handler. The handler takes an event sender object
+  /// as input and returns a boolean as output. When the handler returns false,
+  /// the process will terminate.
+  member __.SetCancelKeyHandler handler =
+    ReadLine.addCancelEventHandler ctxt handler
+
   member __.ReadLine () =
-    let ctxt', line = ReadLine.read ctxt
-    ctxt <- ctxt'
-    line
+    ReadLine.read ctxt
