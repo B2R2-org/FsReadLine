@@ -26,37 +26,12 @@
 
 namespace B2R2.FsReadLine
 
-open System.Text
-
-type History = private {
-  FwdList: string list
-  BwdList: string list
-}
+type History =
+  { FwdList: string list
+    BwdList: string list }
 with
-  static member Init () =
+  static member Init() =
     { FwdList = []; BwdList = [] }
 
-  static member Add history cmd =
-    { history with BwdList = cmd :: history.BwdList }
-
-type ReadLineContext = {
-  mutable Prompt: string
-  mutable CursorPos: int
-  mutable CursorLim: int
-  mutable History: History
-  TabInfo: TabCompletionInfo
-  Builder: StringBuilder
-}
-with
-  static member Init prompt cmds =
-    { Prompt = prompt
-      CursorPos = 0
-      CursorLim = 0
-      History = History.Init ()
-      TabInfo = TabCompletion.init cmds
-      Builder = StringBuilder () }
-
-  static member Clear ctxt =
-    ctxt.CursorPos <- 0
-    ctxt.CursorLim <- 0
-    ctxt.Builder.Clear () |> ignore
+  member this.Add cmd =
+    { this with BwdList = cmd :: this.BwdList }

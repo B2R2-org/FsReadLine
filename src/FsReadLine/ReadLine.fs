@@ -29,22 +29,29 @@ module internal B2R2.FsReadLine.ReadLine
 open System
 
 let inline incCursorPos ctxt = ctxt.CursorPos <- ctxt.CursorPos + 1
+
 let inline decCursorPos ctxt = ctxt.CursorPos <- ctxt.CursorPos - 1
+
 let inline incCursorLim ctxt = ctxt.CursorLim <- ctxt.CursorLim + 1
+
 let inline decCursorLim ctxt = ctxt.CursorLim <- ctxt.CursorLim - 1
+
 let inline isStartOfLine ctxt = ctxt.CursorPos = 0
+
 let inline isEndOfLine ctxt = ctxt.CursorPos = ctxt.CursorLim
+
 let inline isStartOfTerminal () = Console.CursorLeft = 0
+
 let inline isEndOfTerminal () = Console.CursorLeft = Console.BufferWidth - 1
 
 let inline getSubstrLeftOfCursor ctxt =
   ctxt.Builder.ToString().Substring(ctxt.CursorPos)
 
 let moveCursorEndOfAboveLine () =
-  Console.SetCursorPosition (Console.BufferWidth - 1, Console.CursorTop - 1)
+  Console.SetCursorPosition(Console.BufferWidth - 1, Console.CursorTop - 1)
 
 let moveCursorJustLeft () =
-  Console.SetCursorPosition (Console.CursorLeft - 1, Console.CursorTop)
+  Console.SetCursorPosition(Console.CursorLeft - 1, Console.CursorTop)
 
 let moveCursorLeft ctxt =
   if isStartOfLine ctxt then ()
@@ -52,10 +59,10 @@ let moveCursorLeft ctxt =
   else moveCursorJustLeft (); decCursorPos ctxt
 
 let moveCursorStartOfNextLine () =
-  Console.SetCursorPosition (0, Console.CursorTop + 1)
+  Console.SetCursorPosition(0, Console.CursorTop + 1)
 
 let moveCursorJustRight () =
-  Console.SetCursorPosition (Console.CursorLeft + 1, Console.CursorTop)
+  Console.SetCursorPosition(Console.CursorLeft + 1, Console.CursorTop)
 
 let moveCursorRight ctxt =
   if isEndOfLine ctxt then ()
@@ -71,8 +78,8 @@ let rec moveCursorEnd ctxt =
   else moveCursorRight ctxt; moveCursorEnd ctxt
 
 let writeCharEndOfLine ctxt (ch: char) =
-  Console.Write (ch.ToString ())
-  ctxt.Builder.Append (ch) |> ignore
+  Console.Write(ch.ToString())
+  ctxt.Builder.Append(ch) |> ignore
   incCursorPos ctxt
   incCursorLim ctxt
 
@@ -80,9 +87,9 @@ let writeCharMiddle ctxt (ch: char) =
   let left = Console.CursorLeft
   let top = Console.CursorTop
   let str = getSubstrLeftOfCursor ctxt
-  ctxt.Builder.Insert (ctxt.CursorPos, ch) |> ignore
-  Console.Write (ch.ToString () + str)
-  Console.SetCursorPosition (left, top)
+  ctxt.Builder.Insert(ctxt.CursorPos, ch) |> ignore
+  Console.Write(ch.ToString() + str)
+  Console.SetCursorPosition(left, top)
   moveCursorRight ctxt
   incCursorLim ctxt
 
@@ -91,12 +98,12 @@ let writeChar ctxt ch =
   else writeCharMiddle ctxt ch
 
 let removeCharAtCursor ctxt =
-  let _ = ctxt.Builder.Remove (ctxt.CursorPos, 1)
+  let _ = ctxt.Builder.Remove(ctxt.CursorPos, 1)
   let replacement = getSubstrLeftOfCursor ctxt
   let left = Console.CursorLeft
   let top = Console.CursorTop
   Console.Write("{0} ", replacement)
-  Console.SetCursorPosition (left, top)
+  Console.SetCursorPosition(left, top)
   decCursorLim ctxt
 
 let backspace ctxt =
@@ -109,8 +116,8 @@ let delete ctxt =
 
 let getPrevWordPosition ctxt =
   let mutable pos = ctxt.CursorPos - 1
-  while pos > 0 && ctxt.Builder.[pos] = ' ' do pos <- pos - 1
-  while pos >= 0 && ctxt.Builder.[pos] <> ' ' do pos <- pos - 1
+  while pos > 0 && ctxt.Builder[pos] = ' ' do pos <- pos - 1
+  while pos >= 0 && ctxt.Builder[pos] <> ' ' do pos <- pos - 1
   pos + 1
 
 let wordLeft ctxt action =
@@ -124,8 +131,8 @@ let wordLeft ctxt action =
 
 let getNextWordPosition ctxt =
   let mutable pos = ctxt.CursorPos
-  while pos < ctxt.CursorLim && ctxt.Builder.[pos] <> ' ' do pos <- pos + 1
-  while pos < ctxt.CursorLim && ctxt.Builder.[pos] = ' ' do pos <- pos + 1
+  while pos < ctxt.CursorLim && ctxt.Builder[pos] <> ' ' do pos <- pos + 1
+  while pos < ctxt.CursorLim && ctxt.Builder[pos] = ' ' do pos <- pos + 1
   pos
 
 let wordRight ctxt action =
@@ -168,7 +175,7 @@ let nextHistory ctxt =
     clearLine ctxt
     writeStr ctxt cmd
     ctxt.History <- { h with FwdList = cmd :: rest; BwdList = hd :: h.BwdList }
-  | [cmd] ->
+  | [ cmd ] ->
     ctxt.History <- { h with FwdList = []; BwdList = cmd :: h.BwdList }
     clearLine ctxt
   | [] -> ()
@@ -179,22 +186,22 @@ let appendNewLines cnt =
   |> Console.Write
 
 let clearScreen ctxt =
-  let input = ctxt.Builder.ToString ()
+  let input = ctxt.Builder.ToString()
   clearLine ctxt
-  Console.Clear ()
+  Console.Clear()
   Console.Write ctxt.Prompt
   writeStr ctxt input
 
 let tabComplete ctxt =
-  let input = ctxt.Builder.ToString ()
-  match input |> TabCompletion.candidates ctxt.TabInfo with
+  let input = ctxt.Builder.ToString()
+  match input |> ctxt.TabCompletion.Candidates with
   | [] -> ()
-  | [candidate] -> clearLine ctxt; writeStr ctxt candidate
+  | [ candidate ] -> clearLine ctxt; writeStr ctxt candidate
   | lst ->
     clearLine ctxt
-    Console.WriteLine ()
+    Console.WriteLine()
     lst |> List.iter Console.WriteLine
-    Console.Write (ctxt.Prompt)
+    Console.Write(ctxt.Prompt)
     writeStr ctxt input
 
 let keyHandle ctxt (info: ConsoleKeyInfo) =
@@ -227,23 +234,23 @@ let keyHandle ctxt (info: ConsoleKeyInfo) =
   | _ -> info.KeyChar |> writeChar ctxt
 
 let private updateHistory ctxt cmdline =
-  ctxt.History <- History.Add ctxt.History cmdline
+  ctxt.History <- ctxt.History.Add cmdline
 
 let rec private readLoop ctxt =
-  let info = Console.ReadKey (true)
+  let info = Console.ReadKey(true)
   if info.Key <> ConsoleKey.Enter then
     keyHandle ctxt info
     readLoop ctxt
-  else Console.WriteLine ()
+  else Console.WriteLine()
 
 let private readCmdLine ctxt =
   readLoop ctxt
-  let str = ctxt.Builder.ToString ()
+  let str = ctxt.Builder.ToString()
   ReadLineContext.Clear ctxt
   str
 
 let read ctxt =
-  Console.Write (ctxt.Prompt)
+  Console.Write(ctxt.Prompt)
   let cmdline = readCmdLine ctxt
   if String.IsNullOrWhiteSpace cmdline then ""
   else updateHistory ctxt cmdline; cmdline
@@ -251,7 +258,7 @@ let read ctxt =
 let addCancelEventHandler ctxt handler =
   let myhandler sender (args: ConsoleCancelEventArgs) =
     let cancel = handler sender
-    Console.WriteLine ()
+    Console.WriteLine()
     Console.Write ctxt.Prompt
     ReadLineContext.Clear ctxt
     args.Cancel <- cancel

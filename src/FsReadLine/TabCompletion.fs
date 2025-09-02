@@ -26,36 +26,30 @@
 
 namespace B2R2.FsReadLine
 
-type TabCompletionInfo = {
-  /// Prefix character to the list of cmd strings that start with the prefix.
-  PrefixMap: Map<char, string list>
-}
-
-module internal TabCompletion =
-
-  let private updatePrefixMap (cmd: string) map =
-    let prefix = cmd.[0]
+type TabCompletion(cmds) =
+  let updatePrefixMap (cmd: string) map =
+    let prefix = cmd[0]
     if Map.containsKey prefix map then
       Map.add prefix (cmd :: Map.find prefix map) map
     else
-      Map.add prefix [cmd] map
+      Map.add prefix [ cmd ] map
 
-  let rec private buildPrefixMap map (cmds: string list) =
+  let rec buildPrefixMap map (cmds: string list) =
     match cmds with
     | cmd :: rest -> buildPrefixMap (updatePrefixMap cmd map) rest
     | [] -> map
 
-  let init cmds =
-    { PrefixMap = buildPrefixMap Map.empty cmds }
+  /// Prefix character to the list of cmd strings that start with the prefix.
+  let prefixMap = buildPrefixMap Map.empty cmds
 
-  let private cmdFilter input cmd =
+  let cmdFilter input cmd =
     if String.length input >= String.length cmd then false
-    else cmd.StartsWith (input)
+    else cmd.StartsWith(input)
 
-  let candidates info input =
+  member _.Candidates input =
     if String.length input = 0 then []
     else
       let prefix = input.[0]
-      match Map.tryFind prefix info.PrefixMap with
+      match Map.tryFind prefix prefixMap with
       | Some lst -> lst |> List.filter (cmdFilter input)
       | None -> []

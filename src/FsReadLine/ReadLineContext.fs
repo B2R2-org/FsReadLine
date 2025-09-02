@@ -24,14 +24,27 @@
   SOFTWARE.
 *)
 
-[<EntryPoint>]
-let main _ =
-  let cmds = [ "help"; "hello"; "world"; "git"; "git init"; "git add" ]
-  let console = B2R2.FsReadLine.Console("> ", cmds)
-  console.SetCancelKeyHandler(fun _ -> true)
-  let rec loop () =
-    let line = console.ReadLine()
-    printfn " [%s]" line
-    if line = "q" then () else loop ()
-  loop ()
-  0 // return an integer exit code
+namespace B2R2.FsReadLine
+
+open System.Text
+
+type ReadLineContext =
+  { mutable Prompt: string
+    mutable CursorPos: int
+    mutable CursorLim: int
+    mutable History: History
+    TabCompletion: TabCompletion
+    Builder: StringBuilder }
+with
+  static member Init(prompt, cmds) =
+    { Prompt = prompt
+      CursorPos = 0
+      CursorLim = 0
+      History = History.Init()
+      TabCompletion = TabCompletion cmds
+      Builder = StringBuilder() }
+
+  static member Clear ctxt =
+    ctxt.CursorPos <- 0
+    ctxt.CursorLim <- 0
+    ctxt.Builder.Clear() |> ignore

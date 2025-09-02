@@ -13,7 +13,8 @@
 
   <ItemGroup>
     <Compile Include="TabCompletion.fs" />
-    <Compile Include="ReadLineTypes.fs" />
+    <Compile Include="History.fs" />
+    <Compile Include="ReadLineContext.fs" />
     <Compile Include="ReadLine.fs" />
     <Compile Include="Console.fs" />
     <None Include="..\..\LICENSE.md" Pack="true" PackagePath="" />
