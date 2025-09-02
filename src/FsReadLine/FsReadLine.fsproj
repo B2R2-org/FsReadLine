@@ -15,9 +15,9 @@
     <Compile Include="TabCompletion.fs" />
     <Compile Include="ReadLineTypes.fs" />
     <Compile Include="ReadLine.fs" />
-    <Compile Include="Library.fs" />
-    <None Include="..\..\LICENSE.md" Pack="true" PackagePath=""/>
-    <None Include="b2r2-240x240.png" Pack="true" PackagePath=""/>
+    <Compile Include="Console.fs" />
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath="" />
+    <None Include="b2r2-240x240.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
