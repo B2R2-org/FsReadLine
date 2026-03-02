@@ -194,14 +194,14 @@ let tabComplete ctx =
   let candidates = input |> ctx.TabCompletion.Candidates
   match candidates with
   | [||] ->
-    ctx.Callback.OnTabComplete(ctx.Prompt, candidates)
+    ctx.Callback.OnTabComplete(ctx.Prompt, input, candidates)
   | [| candidate |] ->
     clearLine ctx
-    ctx.Callback.OnTabComplete(ctx.Prompt, candidates)
+    ctx.Callback.OnTabComplete(ctx.Prompt, input, candidates)
     writeStr ctx candidate
   | _ ->
     clearLine ctx
-    ctx.Callback.OnTabComplete(ctx.Prompt, candidates)
+    ctx.Callback.OnTabComplete(ctx.Prompt, input, candidates)
     writeStr ctx input
 
 let keyHandle ctx (info: ConsoleKeyInfo) =

@@ -32,7 +32,7 @@ type Console(prompt, cmds, [<Optional>] callback: ICallback) =
       { new ICallback with
           member _.OnReadLine _ = System.Console.WriteLine()
 
-          member _.OnTabComplete(prompt, lst) =
+          member _.OnTabComplete(prompt, _input, lst) =
             match lst with
             | [||]
             | [| _ |] ->
