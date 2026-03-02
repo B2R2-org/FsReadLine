@@ -197,9 +197,7 @@ let tabComplete ctx =
   | [ candidate ] -> clearLine ctx; writeStr ctx candidate
   | lst ->
     clearLine ctx
-    Console.WriteLine()
-    lst |> List.iter Console.WriteLine
-    Console.Write(ctx.Prompt)
+    ctx.Callback.OnTabComplete(ctx.Prompt, lst)
     writeStr ctx input
 
 let keyHandle ctx (info: ConsoleKeyInfo) =
@@ -245,7 +243,7 @@ let rec private readLoop ctx =
 let private readCmdLine ctx =
   readLoop ctx
   let str = ctx.Builder.ToString()
-  ctx.ReadLineCallback.Invoke str
+  ctx.Callback.OnReadLine str
   ReadLineContext.Clear ctx
   str
 

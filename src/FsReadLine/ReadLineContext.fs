@@ -33,16 +33,16 @@ type ReadLineContext =
     mutable History: History
     TabCompletion: TabCompletion
     Builder: StringBuilder
-    ReadLineCallback: ICallback }
+    Callback: ICallback }
 with
-  static member Init(prompt, cmds, readLineCallback) =
+  static member Init(prompt, cmds, callback) =
     { Prompt = prompt
       CursorPos = 0
       CursorLim = 0
       History = History.Init()
       TabCompletion = TabCompletion cmds
       Builder = StringBuilder()
-      ReadLineCallback = readLineCallback }
+      Callback = callback }
 
   static member Clear ctx =
     ctx.CursorPos <- 0

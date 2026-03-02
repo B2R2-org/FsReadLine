@@ -27,4 +27,8 @@ namespace B2R2.FsReadLine
 /// Represents a callback interface for ReadLine.
 [<AllowNullLiteral>]
 type ICallback =
-  abstract Invoke: line: string -> unit
+  /// Invoked when a line is read.
+  abstract OnReadLine: line: string -> unit
+
+  /// Invoked when a list of candidates is generated for tab completion.
+  abstract OnTabComplete: prompt: string * candidates: string list -> unit
