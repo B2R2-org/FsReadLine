@@ -31,7 +31,7 @@ type ICallback =
   abstract OnReadLine: line: string -> unit
 
   /// Invoked when a list of candidates is generated for tab completion.
-  abstract OnTabComplete: prompt: string * candidates: string list -> unit
+  abstract OnTabComplete: prompt: string * candidates: string[] -> unit
 
   /// Invoked when the screen is cleared.
   abstract OnClearScreen: prompt: string -> unit

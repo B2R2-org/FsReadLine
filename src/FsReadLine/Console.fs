@@ -34,12 +34,12 @@ type Console(prompt, cmds, [<Optional>] callback: ICallback) =
 
           member _.OnTabComplete(prompt, lst) =
             match lst with
-            | []
-            | [ _ ] ->
+            | [||]
+            | [| _ |] ->
               ()
             | lst ->
               System.Console.WriteLine()
-              lst |> List.iter System.Console.WriteLine
+              lst |> Array.iter System.Console.WriteLine
               System.Console.Write(prompt)
 
           member _.OnClearScreen(prompt) =

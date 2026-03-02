@@ -45,9 +45,9 @@ type TabCompletion(cmds) =
     else cmd.StartsWith(input)
 
   member _.Candidates input =
-    if String.length input = 0 then []
+    if String.length input = 0 then [||]
     else
       let prefix = input.[0]
       match Map.tryFind prefix prefixMap with
-      | Some lst -> lst |> List.filter (cmdFilter input)
-      | None -> []
+      | Some lst -> lst |> List.filter (cmdFilter input) |> List.toArray
+      | None -> [||]

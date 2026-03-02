@@ -191,16 +191,17 @@ let clearScreen ctx =
 
 let tabComplete ctx =
   let input = ctx.Builder.ToString()
-  match input |> ctx.TabCompletion.Candidates with
-  | [] ->
-    ctx.Callback.OnTabComplete(ctx.Prompt, [])
-  | [ candidate ] ->
+  let candidates = input |> ctx.TabCompletion.Candidates
+  match candidates with
+  | [||] ->
+    ctx.Callback.OnTabComplete(ctx.Prompt, candidates)
+  | [| candidate |] ->
     clearLine ctx
-    ctx.Callback.OnTabComplete(ctx.Prompt, [ candidate ])
+    ctx.Callback.OnTabComplete(ctx.Prompt, candidates)
     writeStr ctx candidate
-  | lst ->
+  | _ ->
     clearLine ctx
-    ctx.Callback.OnTabComplete(ctx.Prompt, lst)
+    ctx.Callback.OnTabComplete(ctx.Prompt, candidates)
     writeStr ctx input
 
 let keyHandle ctx (info: ConsoleKeyInfo) =
