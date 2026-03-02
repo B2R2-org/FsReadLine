@@ -29,7 +29,7 @@ open System.Runtime.InteropServices
 type Console(prompt, cmds, [<Optional>] readLineCallback: ICallback) =
   let readLineCallback =
     if isNull readLineCallback then
-      { new ICallback with member _.Invoke() = System.Console.WriteLine() }
+      { new ICallback with member _.Invoke _ = System.Console.WriteLine() }
     else
       readLineCallback
   let ctx = ReadLineContext.Init(prompt, cmds, readLineCallback)

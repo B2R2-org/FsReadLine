@@ -27,4 +27,4 @@ namespace B2R2.FsReadLine
 /// Represents a callback interface for ReadLine.
 [<AllowNullLiteral>]
 type ICallback =
-  abstract Invoke: unit -> unit
+  abstract Invoke: line: string -> unit

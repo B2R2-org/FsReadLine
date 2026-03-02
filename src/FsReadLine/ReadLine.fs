@@ -240,11 +240,12 @@ let rec private readLoop ctx =
     keyHandle ctx info
     readLoop ctx
   else
-    ctx.ReadLineCallback.Invoke()
+    ()
 
 let private readCmdLine ctx =
   readLoop ctx
   let str = ctx.Builder.ToString()
+  ctx.ReadLineCallback.Invoke str
   ReadLineContext.Clear ctx
   str
 
