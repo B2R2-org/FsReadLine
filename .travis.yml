@@ -1,6 +1,0 @@
-language: csharp
-mono: none
-dotnet: 3.0
-solution: FsReadLine.sln
-script:
-    - dotnet build -c Release
