@@ -27,11 +27,11 @@
 namespace B2R2.FsReadLine
 
 type Console(prompt, cmds) =
-  let mutable ctxt = ReadLineContext.Init(prompt, cmds)
+  let ctxt = ReadLineContext.Init(prompt, cmds)
 
   /// Update prompt string on the fly.
   member _.UpdatePrompt str =
-    ctxt <- { ctxt with Prompt = str }
+    ctxt.Prompt <- str
 
   /// Set cancel key (ctrl+c) handler. The handler takes an event sender object
   /// as input and returns a boolean as output. When the handler returns false,
