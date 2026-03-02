@@ -33,9 +33,14 @@ type Console(prompt, cmds, [<Optional>] callback: ICallback) =
           member _.OnReadLine _ = System.Console.WriteLine()
 
           member _.OnTabComplete(prompt, lst) =
-            System.Console.WriteLine()
-            lst |> List.iter System.Console.WriteLine
-            System.Console.Write(prompt)
+            match lst with
+            | []
+            | [ _ ] ->
+              ()
+            | lst ->
+              System.Console.WriteLine()
+              lst |> List.iter System.Console.WriteLine
+              System.Console.Write(prompt)
 
           member _.OnClearScreen(prompt) =
             System.Console.Clear()
