@@ -31,10 +31,15 @@ type Console(prompt, cmds, [<Optional>] callback: ICallback) =
     if isNull callback then
       { new ICallback with
           member _.OnReadLine _ = System.Console.WriteLine()
+
           member _.OnTabComplete(prompt, lst) =
             System.Console.WriteLine()
             lst |> List.iter System.Console.WriteLine
-            System.Console.Write(prompt) }
+            System.Console.Write(prompt)
+
+          member _.OnClearScreen(prompt) =
+            System.Console.Clear()
+            System.Console.Write prompt }
     else
       callback
 

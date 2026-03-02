@@ -186,8 +186,7 @@ let appendNewLines cnt =
 let clearScreen ctx =
   let input = ctx.Builder.ToString()
   clearLine ctx
-  Console.Clear()
-  Console.Write ctx.Prompt
+  ctx.Callback.OnClearScreen ctx.Prompt
   writeStr ctx input
 
 let tabComplete ctx =
