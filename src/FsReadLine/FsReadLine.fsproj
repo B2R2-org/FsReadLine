@@ -14,6 +14,7 @@
   <ItemGroup>
     <Compile Include="TabCompletion.fs" />
     <Compile Include="History.fs" />
+    <Compile Include="ICallback.fs" />
     <Compile Include="ReadLineContext.fs" />
     <Compile Include="ReadLine.fs" />
     <Compile Include="Console.fs" />

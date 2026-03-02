@@ -1,8 +1,6 @@
 (*
   B2R2.FsReadLine - a GNU readline implementation in F#.
 
-  Author: Sang Kil Cha <sangkilc@kaist.ac.kr>
-
   Copyright (c) SoftSec Lab. @ KAIST, since 2016
 
   Permission is hereby granted, free of charge, to any person obtaining a copy

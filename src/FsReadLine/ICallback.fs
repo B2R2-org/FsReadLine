@@ -24,25 +24,7 @@
 
 namespace B2R2.FsReadLine
 
-open System.Runtime.InteropServices
-
-type Console(prompt, cmds, [<Optional>] readLineCallback: ICallback) =
-  let readLineCallback =
-    if isNull readLineCallback then
-      { new ICallback with member _.Invoke() = System.Console.WriteLine() }
-    else
-      readLineCallback
-  let ctx = ReadLineContext.Init(prompt, cmds, readLineCallback)
-
-  /// Update prompt string on the fly.
-  member _.UpdatePrompt str =
-    ctx.Prompt <- str
-
-  /// Set cancel key (ctrl+c) handler. The handler takes an event sender object
-  /// as input and returns a boolean as output. When the handler returns false,
-  /// the process will terminate.
-  member _.SetCancelKeyHandler handler =
-    ReadLine.addCancelEventHandler ctx handler
-
-  member _.ReadLine() =
-    ReadLine.read ctx
+/// Represents a callback interface for ReadLine.
+[<AllowNullLiteral>]
+type ICallback =
+  abstract Invoke: unit -> unit

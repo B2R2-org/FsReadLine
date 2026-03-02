@@ -1,8 +1,6 @@
 (*
   B2R2.FsReadLine - a GNU readline implementation in F#.
 
-  Author: Sang Kil Cha <sangkilc@kaist.ac.kr>
-
   Copyright (c) SoftSec Lab. @ KAIST, since 2016
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,17 +32,19 @@ type ReadLineContext =
     mutable CursorLim: int
     mutable History: History
     TabCompletion: TabCompletion
-    Builder: StringBuilder }
+    Builder: StringBuilder
+    ReadLineCallback: ICallback }
 with
-  static member Init(prompt, cmds) =
+  static member Init(prompt, cmds, readLineCallback) =
     { Prompt = prompt
       CursorPos = 0
       CursorLim = 0
       History = History.Init()
       TabCompletion = TabCompletion cmds
-      Builder = StringBuilder() }
+      Builder = StringBuilder()
+      ReadLineCallback = readLineCallback }
 
-  static member Clear ctxt =
-    ctxt.CursorPos <- 0
-    ctxt.CursorLim <- 0
-    ctxt.Builder.Clear() |> ignore
+  static member Clear ctx =
+    ctx.CursorPos <- 0
+    ctx.CursorLim <- 0
+    ctx.Builder.Clear() |> ignore
